@@ -61,3 +61,28 @@ func TestGraphQLMutation(t *testing.T) {
 	utils.AssertEqual(t, nil, err)
 	utils.AssertEqual(t, `{"data":{"setHelloString":"Updated hello"}}`, string(body))
 }
+
+func TestError(t *testing.T) {
+	app := fiber.New()
+	h := fgg.Handler{Schema: GetSchema()}
+	app.Post("/graphql", h.ServeHTTP)
+
+	req := httptest.NewRequest(
+		"POST",
+		"/graphql",
+		strings.NewReader(`
+						{
+						  "query": "{ showError }"
+						}
+					`),
+	)
+	req.Header.Set("Content-Type", "application/json")
+
+	resp, err := app.Test(req)
+	utils.AssertEqual(t, nil, err)
+	utils.AssertEqual(t, 200, resp.StatusCode)
+
+	body, err := ioutil.ReadAll(resp.Body)
+	utils.AssertEqual(t, nil, err)
+	utils.AssertEqual(t, `{"errors":[{"message":"error in show error","path":["showError"]}],"data":null}`, string(body))
+}
