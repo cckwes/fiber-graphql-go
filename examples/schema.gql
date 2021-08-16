@@ -1,0 +1,26 @@
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+type Query {
+    pendingTodo: [TodoItem]!
+    todo(id: ID!): TodoItem!
+}
+
+type Mutation {
+    markItemDone(id: ID!): TodoItem!
+}
+
+type TodoItem {
+    id: ID!
+    description: String!
+    type: Type!
+    isDone: Boolean!
+}
+
+enum Type {
+    PERSONAL
+    WORK
+    FAMILY
+}

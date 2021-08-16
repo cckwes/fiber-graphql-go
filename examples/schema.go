@@ -3,36 +3,17 @@ package examples
 import (
 	"errors"
 	graphql "github.com/graph-gophers/graphql-go"
+	"io/ioutil"
 )
 
-var Schema = `
-	schema {
-	  query: Query
-	  mutation: Mutation
+func ReadSchemaFile() (string, error) {
+	rawSchema, err := ioutil.ReadFile("./examples/schema.gql")
+	if err != nil {
+		return "", err
 	}
 
-	type Query {
-	  pendingTodo: [TodoItem]!
-	  todo(id: ID!): TodoItem!
-	}
-
-	type Mutation {
-	  markItemDone(id: ID!): TodoItem!
-	}
-
-	type TodoItem {
-	  id: ID!
-	  description: String!
-	  type: Type!
-	  isDone: Boolean!
-	}
-
-	enum Type {
-	  PERSONAL
-	  WORK
-	  FAMILY
-	}
-`
+	return string(rawSchema), nil
+}
 
 type todoItem struct {
 	ID graphql.ID
