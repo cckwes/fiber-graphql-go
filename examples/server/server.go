@@ -11,11 +11,17 @@ import (
 func main()  {
 	app := fiber.New()
 
-	schema := graphql.MustParseSchema(examples.Schema, &examples.Resolver{})
+	rawSchema, err := examples.ReadSchemaFile()
+	if err != nil {
+		fmt.Printf("error reading schema file %v", err.Error())
+		return
+	}
+
+	schema := graphql.MustParseSchema(rawSchema, &examples.Resolver{})
 	handler := fgg.Handler{Schema: schema}
 	app.Post("/graphql", handler.ServeHTTP)
 
-	err := app.Listen(":9000")
+	err = app.Listen(":9000")
 	if err != nil {
 		fmt.Println("Failed to listen to port 9000, terminating...")
 		fmt.Println(err.Error())
